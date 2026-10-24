@@ -1,0 +1,50 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+.venv/
+venv/
+env/
+ENV/
+.env
+.env.*
+!.env.example
+
+# Jupyter
+.ipynb_checkpoints/
+
+# Build and packaging
+build/
+dist/
+*.egg-info/
+.eggs/
+
+# Model weights, datasets, and generated artifacts
+*.ckpt
+*.pt
+*.pth
+*.safetensors
+*.onnx
+*.bin
+*.gguf
+checkpoints/
+models/
+outputs/
+logs/
+
+# Tooling and OS files
+.idea/
+.vscode/
+*.swp
+*.swo
+.DS_Store
+Thumbs.db
+
+# Local notes and secrets
+.coverage
+htmlcov/
+.pytest_cache/
+.mypy_cache/
+*.local
