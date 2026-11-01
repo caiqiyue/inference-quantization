@@ -1,0 +1,46 @@
+{
+  "schema_version": 1,
+  "rules": {
+    "single_active_feature": true,
+    "passing_requires_evidence": true,
+    "do_not_skip_verification": true
+  },
+  "features": [
+    {
+      "id": "harness-001",
+      "priority": 1,
+      "phase": "P0",
+      "user_visible_behavior": "可校验实验配置，并生成可审查的 mini-sglang 启动命令。",
+      "status": "passing",
+      "verification": ["./init.sh", "python -m harness.cli validate --config configs/experiments/baseline.json", "python -m harness.cli plan --config configs/experiments/baseline.json"],
+      "evidence": "init.sh and unittest suite pass"
+    },
+    {
+      "id": "harness-002",
+      "priority": 2,
+      "phase": "P0",
+      "user_visible_behavior": "先确认量化产物可被目标运行时加载，再对运行中的 mini-sglang OpenAI 兼容服务发送 smoke 请求并产出 manifest 与指标。",
+      "status": "passing",
+      "verification": ["./init.sh", "python -m harness.cli validate --config configs/experiments/awq-qwen2.5-0.5b-smoke.json", "python -m harness.cli plan --config configs/experiments/awq-qwen2.5-0.5b-smoke.json", "检查 AWQ native、adapter 和 Harness smoke 的 manifest/metrics"],
+      "evidence": "Default llm-awq W4G128 search and packing completed for ModelScope Qwen2.5-0.5B (24/24 layers). Native AWQ full-model smoke is in runs/20261101-063118-native-awq-65c3132f. The dedicated llm-awq-v2→mini-sglang adapter reproduces native QKV and Gate/Up outputs exactly for GEMV and GEMM in runs/20261101-062735-awq-adapter-90196dd8. mini-sglang then completed 2/2 Harness requests in runs/20261101-063001-ebfb4f7d. Functional loader/API compatibility is verified; output quality and performance are outside this feature's acceptance scope."
+    },
+    {
+      "id": "harness-003",
+      "priority": 3,
+      "phase": "P1",
+      "user_visible_behavior": "支持替换量化算法和模型格式，并统一记录目标运行时性能与质量对比结果。",
+      "status": "planned",
+      "verification": ["注册一个量化适配器", "运行同一数据集的 baseline/quantized 配置", "生成对比表并保存原始结果"],
+      "evidence": "planned"
+    },
+    {
+      "id": "harness-004",
+      "priority": 4,
+      "phase": "P0",
+      "user_visible_behavior": "在 qiyue.cai 容器内隔离 AWQ 与 mini-sglang 环境，并能在 RTX 5090 上执行 GPU smoke。",
+      "status": "passing",
+      "verification": ["验证 awq 环境的 PyTorch 和 AWQ kernel", "验证 mini-sglang 环境的 PyTorch、CLI 和 GPU smoke", "记录 CUDA/GPU/版本证据"],
+      "evidence": "AWQ torch 2.7.1+cu128 and kernel import pass; mini-sglang torch 2.7.1+cu128, CLI and GPU matmul smoke pass; both see RTX 5090 capability 12.0"
+    }
+  ]
+}

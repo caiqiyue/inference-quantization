@@ -7,6 +7,11 @@ from transformers.models.opt.modeling_opt import OPTDecoderLayer
 from transformers.models.llama.modeling_llama import LlamaDecoderLayer, LlamaRMSNorm
 from transformers.activations import GELUActivation
 from transformers.models.qwen2.modeling_qwen2 import Qwen2RMSNorm, Qwen2DecoderLayer
+try:
+    from transformers.models.qwen3.modeling_qwen3 import Qwen3RMSNorm, Qwen3DecoderLayer
+except ImportError:  # Older AWQ environments do not ship Qwen3 yet.
+    Qwen3RMSNorm = ()
+    Qwen3DecoderLayer = ()
 
 from .qmodule import ScaledActivation
 from ..utils.module import get_op_by_name, get_op_name, set_op_by_name
@@ -212,7 +217,7 @@ def auto_scale_block(module, module_kwargs, w_bit, q_config, input_feat):
             )
         )
 
-    elif isinstance(module, (LlamaDecoderLayer, Qwen2DecoderLayer)):
+    elif isinstance(module, (LlamaDecoderLayer, Qwen2DecoderLayer, Qwen3DecoderLayer)):
         # attention input
         scales_list.append(
             _auto_get_scale(
@@ -459,7 +464,7 @@ def apply_scale(module, scales_list, input_feat_dict=None):
         if isinstance(prev_op, nn.Linear):
             assert len(layers) == 1
             scale_fc_fc(prev_op, layers[0], scales)
-        elif isinstance(prev_op, (nn.LayerNorm, LlamaRMSNorm, Qwen2RMSNorm)):
+        elif isinstance(prev_op, (nn.LayerNorm, LlamaRMSNorm, Qwen2RMSNorm, Qwen3RMSNorm)):
             scale_ln_fcs(prev_op, layers, scales)
         elif isinstance(prev_op, (nn.GELU, BloomGelu, GELUActivation, nn.SiLU)):
             new_module = ScaledActivation(prev_op, scales)
@@ -472,7 +477,8 @@ def apply_scale(module, scales_list, input_feat_dict=None):
         if input_feat_dict is not None:
             for layer_name in layer_names:
                 inp = input_feat_dict[layer_name]
-                inp.div_(scales.view(1, -1).to(inp.device).to(inp.dtype))
+                shape = (1,) * (inp.dim() - 1) + (-1,)
+                inp.div_(scales.view(shape).to(inp.device).to(inp.dtype))
 
         prev_op.cpu()
         for layer in layers:

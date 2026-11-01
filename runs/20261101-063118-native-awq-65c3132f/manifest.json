@@ -1,0 +1,10 @@
+{
+  "run_id": "20261101-063118-native-awq-65c3132f",
+  "kind": "native-llm-awq-full-model-smoke",
+  "model": "/home/qiyue.cai/host_workspace/models/Qwen2.5-0.5B-Instruct",
+  "checkpoint": "/home/qiyue.cai/host_workspace/models/Qwen2.5-0.5B-Instruct-awq/qwen2.5-0.5b-w4-g128-awq-v2.pt",
+  "checkpoint_sha256": "9bb0fd93bac5c804dd532af773f9324224174d09a4519273128af881bc1b38d2",
+  "group_size": 128,
+  "torch": "2.7.1+cu128",
+  "cuda": "12.8"
+}

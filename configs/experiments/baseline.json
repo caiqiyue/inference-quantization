@@ -1,0 +1,45 @@
+{
+  "name": "qwen3-8b-bf16-wikitext2-baseline",
+  "model": "/home/qiyue.cai/host_workspace/models/Qwen3-8B",
+  "dataset": "../../data/wikitext2-test-32.jsonl",
+  "sampling": {
+    "temperature": 0.0,
+    "max_tokens": 64,
+    "stream": false
+  },
+  "server": {
+    "host": "127.0.0.1",
+    "port": 30000,
+    "tp": 2,
+    "dtype": "bfloat16",
+    "mem_fraction": 0.8
+  },
+  "quantization": {
+    "method": "none",
+    "weight_dtype": "bfloat16",
+    "activation_dtype": "bfloat16",
+    "kv_cache_dtype": "auto"
+  },
+  "algorithm": {
+    "name": "none",
+    "implementation": "none",
+    "calibration_dataset": null
+  },
+  "artifact": {
+    "format": "huggingface-bf16",
+    "path": "/home/qiyue.cai/host_workspace/models/Qwen3-8B",
+    "runtime_compatible": true
+  },
+  "runtime": {
+    "name": "mini-sglang",
+    "api": "openai-compatible",
+    "version_source": "repository"
+  },
+  "dataset_metadata": {
+    "source": "/home/qiyue.cai/host_workspace/calibration-data/wikitext-2-raw/wiki.test.raw",
+    "split": "test",
+    "preparation": "scripts/prepare_wikitext2.py --limit 32 --max-chars 768",
+    "purpose": "serial mini-sglang baseline smoke and latency measurement; not a perplexity evaluation"
+  },
+  "tags": ["baseline", "qwen3", "8b", "bf16", "wikitext-2", "tp2"]
+}

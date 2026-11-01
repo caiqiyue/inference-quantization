@@ -30,7 +30,8 @@ dist/
 *.bin
 *.gguf
 checkpoints/
-models/
+/models/
+/runs/
 outputs/
 logs/
 

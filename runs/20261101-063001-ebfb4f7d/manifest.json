@@ -1,0 +1,62 @@
+{
+  "run_id": "20261101-063001-ebfb4f7d",
+  "experiment": {
+    "name": "awq-qwen2.5-0.5b-w4g128-smoke",
+    "model": "/home/qiyue.cai/host_workspace/models/Qwen2.5-0.5B-Instruct",
+    "dataset": "../../data/smoke.jsonl",
+    "sampling": {
+      "temperature": 0.0,
+      "max_tokens": 32,
+      "stream": false
+    },
+    "server": {
+      "host": "127.0.0.1",
+      "port": 30002,
+      "tp": 1,
+      "dtype": "bfloat16",
+      "mem_fraction": 0.8,
+      "extra_args": {
+        "awq_checkpoint": "/home/qiyue.cai/host_workspace/models/Qwen2.5-0.5B-Instruct-awq/qwen2.5-0.5b-w4-g128-awq-v2.pt",
+        "awq_group_size": 128,
+        "context_length": 1024,
+        "attention_backend": "torch",
+        "cuda_graph_max_bs": 0,
+        "num_pages": 1024
+      }
+    },
+    "quantization": {
+      "method": "awq",
+      "weight_dtype": "int4",
+      "activation_dtype": "bfloat16",
+      "kv_cache_dtype": "auto",
+      "group_size": 128
+    },
+    "algorithm": {
+      "name": "awq",
+      "implementation": "llm-awq",
+      "calibration_dataset": "data/wikitext2-test-100.jsonl",
+      "search_artifact": "/home/qiyue.cai/host_workspace/models/Qwen2.5-0.5B-Instruct-awq/w4-g128-awq-search.pt",
+      "search_mode": "default-auto-scale-and-mse-range"
+    },
+    "artifact": {
+      "format": "llm-awq-v2-pt",
+      "path": "/home/qiyue.cai/host_workspace/models/Qwen2.5-0.5B-Instruct-awq/qwen2.5-0.5b-w4-g128-awq-v2.pt",
+      "source_checkpoint": "/home/qiyue.cai/host_workspace/models/Qwen2.5-0.5B-Instruct",
+      "runtime_compatible": false
+    },
+    "runtime": {
+      "name": "mini-sglang",
+      "api": "openai-compatible",
+      "version_source": "repository"
+    },
+    "tags": [
+      "awq",
+      "int4",
+      "qwen2",
+      "adapter-validation"
+    ]
+  },
+  "config_source": "configs/experiments/awq-qwen2.5-0.5b-smoke.json",
+  "server_url": "http://127.0.0.1:30002",
+  "prompt_count": 2
+}

@@ -27,7 +27,11 @@ def get_named_linears(module):
 
 
 def get_blocks(model):
-    if model.__class__.__name__ in ("LlamaForCausalLM", "Qwen2ForCausalLM"):
+    if model.__class__.__name__ in (
+        "LlamaForCausalLM",
+        "Qwen2ForCausalLM",
+        "Qwen3ForCausalLM",
+    ):
         layers = model.model.layers
     elif model.__class__.__name__ == "InternVL3":
         layers = model.language_model.model.layers
@@ -55,7 +59,7 @@ def get_blocks(model):
 
 
 def move_embed(model, device):
-    if isinstance(model, (LlamaForCausalLM, Qwen2ForCausalLM)):
+    if isinstance(model, (LlamaForCausalLM, Qwen2ForCausalLM)) or model.__class__.__name__ == "Qwen3ForCausalLM":
         model.model.embed_tokens = model.model.embed_tokens.to(device)
         model.model.rotary_emb = model.model.rotary_emb.to(device)
     elif model.__class__.__name__ == "InternVL3":
@@ -139,6 +143,14 @@ def run_awq(
             super().__init__()
             self.module = module
 
+        def __getattr__(self, name):
+            try:
+                return super().__getattr__(name)
+            except AttributeError:
+                # Newer Transformers models read metadata directly from the
+                # decoder layer while capturing the first-layer inputs.
+                return getattr(self.module, name)
+
         def forward(self, inp, **kwargs):
             inps.append(inp)
             layer_kwargs.update(kwargs)
@@ -178,8 +190,7 @@ def run_awq(
 
         # firstly, get input features of all linear layers
         def cache_input_hook(m, x, y, name, feat_dict):
-            x = x[0]
-            x = x.detach().cpu()
+            x = x[0].detach().cpu()
             feat_dict[name].append(x)
 
         input_feat = defaultdict(list)
@@ -191,8 +202,13 @@ def run_awq(
                 )
             )
         inps = inps.to(next(layer.parameters()).device)  # in case multi-gpu
+        if model.__class__.__name__ == "Qwen3ForCausalLM":
+            position_ids = layer_kwargs["position_ids"].to(inps.device)
+            rotary_emb = model.model.rotary_emb.to(inps.device)
+            layer_kwargs["position_embeddings"] = rotary_emb(inps, position_ids)
         # get output as next layer's input
-        inps = layer(inps, **layer_kwargs)[0]
+        layer_output = layer(inps, **layer_kwargs)
+        inps = layer_output[0] if isinstance(layer_output, tuple) else layer_output
         for h in handles:
             h.remove()
         # now solve for scaling and clipping

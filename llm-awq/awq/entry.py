@@ -67,6 +67,14 @@ parser.add_argument(
     "--load_awq", type=str, default=None, help="load the awq search results"
 )
 parser.add_argument(
+    "--calib_data",
+    type=str,
+    default="pileval",
+    help="calibration source: pileval or a local JSONL file with prompt/text fields",
+)
+parser.add_argument("--no_auto_scale", action="store_true")
+parser.add_argument("--no_mse_range", action="store_true")
+parser.add_argument(
     "--vila-15",
     action="store_true",
     help="quantizing vila 1.5",
@@ -207,6 +215,9 @@ def build_model_and_enc(model_path, dtype):
                 q_config=q_config,
                 n_samples=128,
                 seqlen=512,
+                calib_data=args.calib_data,
+                auto_scale=not args.no_auto_scale,
+                mse_range=not args.no_mse_range,
             )
             if args.dump_awq:
                 dirpath = os.path.dirname(args.dump_awq)

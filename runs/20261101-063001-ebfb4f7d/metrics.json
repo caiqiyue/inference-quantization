@@ -1,0 +1,7 @@
+{
+  "request_count": 2,
+  "mean_latency_ms": 3180.6777212768793,
+  "p50_latency_ms": 5664.493698626757,
+  "completion_tokens": 0,
+  "aggregate_tokens_per_second": 0.0
+}

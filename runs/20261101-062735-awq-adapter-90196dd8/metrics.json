@@ -1,0 +1,65 @@
+{
+  "passed": true,
+  "comparisons": {
+    "qkv": [
+      {
+        "rows": 1,
+        "input_shape": [
+          1,
+          896
+        ],
+        "output_shape": [
+          1,
+          1152
+        ],
+        "max_abs_error": 0.0,
+        "mean_abs_error": 0.0,
+        "allclose": true
+      },
+      {
+        "rows": 8,
+        "input_shape": [
+          8,
+          896
+        ],
+        "output_shape": [
+          8,
+          1152
+        ],
+        "max_abs_error": 0.0,
+        "mean_abs_error": 0.0,
+        "allclose": true
+      }
+    ],
+    "gate_up": [
+      {
+        "rows": 1,
+        "input_shape": [
+          1,
+          896
+        ],
+        "output_shape": [
+          1,
+          9728
+        ],
+        "max_abs_error": 0.0,
+        "mean_abs_error": 0.0,
+        "allclose": true
+      },
+      {
+        "rows": 8,
+        "input_shape": [
+          8,
+          896
+        ],
+        "output_shape": [
+          8,
+          9728
+        ],
+        "max_abs_error": 0.0,
+        "mean_abs_error": 0.0,
+        "allclose": true
+      }
+    ]
+  }
+}

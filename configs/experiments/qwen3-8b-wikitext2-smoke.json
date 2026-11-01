@@ -1,0 +1,51 @@
+{
+  "name": "qwen3-8b-bf16-wikitext2-smoke",
+  "model": "/home/qiyue.cai/host_workspace/models/Qwen3-8B",
+  "dataset": "../../data/wikitext2-test-2.jsonl",
+  "sampling": {
+    "temperature": 0.0,
+    "max_tokens": 16,
+    "stream": false
+  },
+  "server": {
+    "host": "127.0.0.1",
+    "port": 30000,
+    "tp": 1,
+    "dtype": "bfloat16",
+    "mem_fraction": 0.7,
+    "extra_args": {
+      "context_length": 1024,
+      "attention_backend": "torch",
+      "cuda_graph_max_bs": 0,
+      "num_pages": 1024
+    }
+  },
+  "quantization": {
+    "method": "none",
+    "weight_dtype": "bfloat16",
+    "activation_dtype": "bfloat16",
+    "kv_cache_dtype": "auto"
+  },
+  "algorithm": {
+    "name": "none",
+    "implementation": "none",
+    "calibration_dataset": null
+  },
+  "artifact": {
+    "format": "huggingface-bf16",
+    "path": "/home/qiyue.cai/host_workspace/models/Qwen3-8B",
+    "runtime_compatible": true
+  },
+  "runtime": {
+    "name": "mini-sglang",
+    "api": "openai-compatible",
+    "version_source": "repository"
+  },
+  "dataset_metadata": {
+    "source": "/home/qiyue.cai/host_workspace/calibration-data/wikitext-2-raw/wiki.test.raw",
+    "split": "test",
+    "preparation": "scripts/prepare_wikitext2.py --output data/wikitext2-test-2.jsonl --limit 2",
+    "purpose": "minimal mini-sglang PyTorch CUDA load and request smoke without FlashInfer/FlashAttention"
+  },
+  "tags": ["smoke", "qwen3", "8b", "bf16", "wikitext-2", "single-gpu"]
+}
